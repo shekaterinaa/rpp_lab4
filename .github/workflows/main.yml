@@ -13,18 +13,22 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Create versioned directory
-      run: mkdir -p v${{ github.event.release.tag }}
+      run: |
+        VERSION_DIR="v${{ github.event.release.tag }}"
+        mkdir -p $VERSION_DIR
 
     - name: Copy HTML files to versioned directory
       run: |
-        cp ./index.html ./v${{ github.event.release.tag }}/index.html
-        cp ./ru.html ./v${{ github.event.release.tag }}/ru.html
-        cp ./en.html ./v${{ github.event.release.tag }}/en.html
+        VERSION_DIR="v${{ github.event.release.tag }}"
+        cp ./index.html ./$VERSION_DIR/index.html
+        cp ./ru.html ./$VERSION_DIR/ru.html
+        cp ./en.html ./$VERSION_DIR/en.html
 
     - name: Check contents of the versioned directory
       run: |
-        echo "Contents of the v${{ github.event.release.tag }} directory:"
-        ls -la v${{ github.event.release.tag }}
+        VERSION_DIR="v${{ github.event.release.tag }}"
+        echo "Contents of the $VERSION_DIR directory:"
+        ls -la $VERSION_DIR
 
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v4
@@ -32,3 +36,4 @@ jobs:
         github_token: ${{ secrets.KATE_TOKEN }}
         publish_dir: ./
         keep_files: true
+
