@@ -2,18 +2,29 @@ name: Deploy Multilingual Site
 
 on:
   release:
-     types: [published]
+    types: [published]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    #Шаг 1
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js (если нужны зависимости)
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14' # или укажите нужную вам версию
+
+    - name: Copy files to versioned directory
+      run: |
+        mkdir -p public/v${{ github.event.release.tag }}
+        cp -r ./public/* public/v${{ github.event.release.tag }}
 
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
+        publish_dir: ./public
         keep_files: true
