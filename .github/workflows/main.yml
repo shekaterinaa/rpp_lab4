@@ -4,9 +4,6 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: write  # Даем права на запись содержимого
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,29 +12,25 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v2
 
+    - name: Determine version from tag
+      id: vars
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
     - name: Create versioned directory
-      run: |
-        VERSION=v${{ github.event.release.tag }}
-        mkdir -p $VERSION
-        cp ./index.html ./$VERSION/index.html
-        cp ./ru.html ./$VERSION/ru.html
-        cp ./en.html ./$VERSION/en.html
+      run: mkdir -p "$VERSION"
 
-    - name: Check contents of the versioned directory
+    - name: Copy HTML files to versioned directory
       run: |
-        echo "Contents of the directory:"
-        ls -la v${{ github.event.release.tag }}
-
-    - name: Configure Git
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        cp ./index.html "./$VERSION/index.html"
+        cp ./ru.html "./$VERSION/ru.html"
+        cp ./en.html "./$VERSION/en.html"
 
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ secrets.KATE_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
-        keep_files: true  # Не удаляем старые файлы
+        keep_files: true
+
 
 
