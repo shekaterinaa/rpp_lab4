@@ -17,14 +17,25 @@ jobs:
       with:
         node-version: '14' # или укажите нужную вам версию
 
+    - name: Build project (если требуется)
+      run: |
+        # Ваша команда сборки, если у вас есть
+        # Например: npm install && npm run build
+
+    - name: Create public directory
+      run: mkdir -p public/v${{ github.event.release.tag }}
+
     - name: Copy files to versioned directory
       run: |
-        mkdir -p public/v${{ github.event.release.tag }}
-        cp -r ./public/* public/v${{ github.event.release.tag }}
+        cp -r ./* public/v${{ github.event.release.tag }}/
+
+    - name: Check contents of public/v${{ github.event.release.tag }}
+      run: |
+        echo "Contents of the public/v${{ github.event.release.tag }} directory:"
+        ls -la public/v${{ github.event.release.tag }}
 
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./public
-        keep_files: true
