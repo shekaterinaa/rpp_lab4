@@ -12,30 +12,23 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v2
 
-    - name: Setup Node.js (если нужны зависимости)
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14' # или укажите нужную вам версию
+    - name: Create versioned directory
+      run: mkdir -p v${{ github.event.release.tag }}
 
-    - name: Build project (если требуется)
+    - name: Copy HTML files to versioned directory
       run: |
-        # Ваша команда сборки, если у вас есть
-        # Например: npm install && npm run build
+        cp ./index.html ./v${{ github.event.release.tag }}/index.html
+        cp ./ru.html ./v${{ github.event.release.tag }}/ru.html
+        cp ./en.html ./v${{ github.event.release.tag }}/en.html
 
-    - name: Create public directory
-      run: mkdir -p public/v${{ github.event.release.tag }}
-
-    - name: Copy files to versioned directory
+    - name: Check contents of the versioned directory
       run: |
-        cp -r ./* public/v${{ github.event.release.tag }}/
-
-    - name: Check contents of public/v${{ github.event.release.tag }}
-      run: |
-        echo "Contents of the public/v${{ github.event.release.tag }} directory:"
-        ls -la public/v${{ github.event.release.tag }}
+        echo "Contents of the v${{ github.event.release.tag }} directory:"
+        ls -la v${{ github.event.release.tag }}
 
     - name: Deploy to Github Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
+        publish_dir: ./
+        keep_files: true
