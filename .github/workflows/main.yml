@@ -13,27 +13,26 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Create versioned directory
-      run: |
-        VERSION_DIR="v${{ github.event.release.tag }}"
-        mkdir -p $VERSION_DIR
+      run: mkdir -p v${{ github.event.release.tag }}
 
     - name: Copy HTML files to versioned directory
       run: |
-        VERSION_DIR="v${{ github.event.release.tag }}"
-        cp ./index.html ./$VERSION_DIR/index.html
-        cp ./ru.html ./$VERSION_DIR/ru.html
-        cp ./en.html ./$VERSION_DIR/en.html
+        cp ./index.html ./v${{ github.event.release.tag }}/index.html
+        cp ./ru.html ./v${{ github.event.release.tag }}/ru.html
+        cp ./en.html ./v${{ github.event.release.tag }}/en.html
 
     - name: Check contents of the versioned directory
       run: |
-        VERSION_DIR="v${{ github.event.release.tag }}"
-        echo "Contents of the $VERSION_DIR directory:"
-        ls -la $VERSION_DIR
+        echo "Contents of the v${{ github.event.release.tag }} directory:"
+        ls -la v${{ github.event.release.tag }}
 
-    - name: Deploy to Github Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.KATE_TOKEN }}
-        publish_dir: ./
-        keep_files: true
+    - name: Set up Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
 
+    - name: Commit and push to gh-pages
+      run: |
+        git add .
+        git commit -m "Deploy version ${{ github.event.release.tag }}"
+        git push origin HEAD:gh-pages --force
