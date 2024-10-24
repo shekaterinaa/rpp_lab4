@@ -9,17 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repositoriy
+    - name: Checkout repo
       uses: actions/checkout@v2
 
-    - name: Take version from tag
+    - name: Determine version from tag
       id: vars
       run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-    - name: Create directory
+    - name: Create versioned directory
       run: mkdir -p "$VERSION"
 
-    - name: Copy HTML files 
+    - name: Copy HTML files to versioned directory
       run: |
         cp ./index.html "./$VERSION/index.html"
         cp ./ru.html "./$VERSION/ru.html"
